@@ -1,0 +1,15 @@
+[package]
+name = "algorithms-lib"
+version = "1.0.0"
+edition = "2021"
+authors = ["Parthiv Rawat"]
+license = "MIT"
+description = "A comprehensive, zero-dependency collection of common algorithms for Rust"
+repository = "https://github.com/parthivrawat/algorithms-lib"
+homepage = "https://github.com/parthivrawat/algorithms-lib"
+documentation = "https://docs.rs/algorithms-lib"
+readme = "README.md"
+keywords = ["algorithms", "sorting", "searching", "graphs", "dynamic-programming"]
+categories = ["algorithms"]
+
+[dependencies]

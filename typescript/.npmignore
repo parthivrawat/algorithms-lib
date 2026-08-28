@@ -1,0 +1,7 @@
+src/
+vitest.config.ts
+tsconfig.json
+.gitignore
+coverage/
+node_modules/
+*.test.ts
