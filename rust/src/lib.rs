@@ -1102,7 +1102,7 @@ pub fn activity_selection(activities: &[(i64, i64)]) -> Result<Vec<usize>, Error
             end,
         });
     }
-    list.sort_by(|a, b| a.end.cmp(&b.end));
+    list.sort_by_key(|a| a.end);
     let mut selected = vec![list[0].index];
     let mut last_end = list[0].end;
     for item in list.iter().skip(1) {
