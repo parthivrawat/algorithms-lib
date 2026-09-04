@@ -1,9 +1,12 @@
 '''Greedy algorithm implementations.'''
 
 import heapq
-from typing import Dict, List, Tuple, Union
+import math
+from typing import Dict, List, Sequence, Tuple, TypeVar, Union
 
-from .exceptions import EmptyInputError
+from .exceptions import EmptyInputError, InvalidInputError
+
+T = TypeVar('T')
 
 
 def activity_selection(activities: List[Tuple[int, int]]) -> List[int]:
@@ -37,23 +40,36 @@ def fractional_knapsack(
 ) -> float:
     '''Return the maximum value achievable in the fractional knapsack problem.
 
-    Unlike 0/1 knapsack, items can be taken partially.
+    Unlike 0/1 knapsack, items can be taken partially. Zero-weight items are
+    taken in full when their value is positive, since they consume no
+    capacity. Items whose value-to-weight ratio is non-positive are never
+    taken, so the result is never negative.
+
+    Raises:
+        ValueError: If input lengths differ, capacity is negative, or any
+            weight is negative or NaN.
     '''
     if len(weights) != len(values):
         raise ValueError('weights and values must have the same length')
     if capacity < 0:
         raise ValueError('capacity must be non-negative')
 
-    items = [
-        (values[i] / weights[i], weights[i], values[i])
-        for i in range(len(weights))
-        if weights[i] > 0
-    ]
+    total = 0.0
+    items: List[Tuple[float, float]] = []
+    for i in range(len(weights)):
+        if weights[i] < 0 or math.isnan(weights[i]) or math.isnan(values[i]):
+            raise ValueError('weights and values must be valid numbers, weights non-negative')
+        if weights[i] == 0:
+            # Zero-weight items consume no capacity: take them if they add value.
+            total += max(0.0, values[i])
+        else:
+            items.append((values[i] / weights[i], weights[i]))
     items.sort(reverse=True, key=lambda x: x[0])
 
-    total = 0.0
     remaining = float(capacity)
-    for ratio, weight, value in items:
+    for ratio, weight in items:
+        if ratio <= 0:
+            break  # taking a non-positive-value item can only lower the total
         take = min(weight, remaining)
         total += take * ratio
         remaining -= take
@@ -63,9 +79,17 @@ def fractional_knapsack(
 
 
 def huffman_coding(frequencies: Dict[str, int]) -> Dict[str, str]:
-    '''Return a prefix-free Huffman code table for the given symbol frequencies.'''
+    '''Return a prefix-free Huffman code table for the given symbol frequencies.
+
+    All frequencies must be positive.
+    '''
     if not frequencies:
         raise EmptyInputError('frequencies must not be empty')
+    for char, freq in frequencies.items():
+        if freq <= 0:
+            raise InvalidInputError(
+                f'frequency for {char!r} must be positive, got {freq}'
+            )
 
     class _Node:
         def __init__(self, freq, char=None, left=None, right=None):
@@ -102,3 +126,29 @@ def _assign_codes(node, prefix: str, codes: Dict[str, str]) -> None:
         return
     _assign_codes(node.left, prefix + '0', codes)
     _assign_codes(node.right, prefix + '1', codes)
+
+
+def huffman_encode(symbols: Sequence[T], code_table: Dict[T, str]) -> str:
+    '''Encode a sequence of symbols using the supplied Huffman ``code_table``.'''
+    parts: List[str] = []
+    for s in symbols:
+        try:
+            parts.append(code_table[s])
+        except KeyError:
+            raise InvalidInputError(f'huffman_encode: symbol {s!r} not in code table')
+    return ''.join(parts)
+
+
+def huffman_decode(encoded: str, code_table: Dict[T, str]) -> List[T]:
+    '''Decode a Huffman bit string using the supplied ``code_table``.'''
+    reverse = {code: s for s, code in code_table.items()}
+    result: List[T] = []
+    current = ''
+    for bit in encoded:
+        current += bit
+        if current in reverse:
+            result.append(reverse[current])
+            current = ''
+    if current:
+        raise InvalidInputError('huffman_decode: incomplete or invalid bit string')
+    return result

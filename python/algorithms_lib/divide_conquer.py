@@ -2,7 +2,7 @@
 
 from typing import List, Tuple, TypeVar, Union
 
-from .exceptions import EmptyInputError
+from .exceptions import EmptyInputError, InvalidInputError
 
 T = TypeVar('T', int, float)
 
@@ -86,16 +86,122 @@ def _merge_and_count(left: List[T], right: List[T]) -> Tuple[List[T], int]:  # t
 def fast_power(base: Union[int, float], exponent: int) -> Union[int, float]:
     '''Return ``base`` raised to ``exponent`` using exponentiation by squaring.
 
+    ``exponent`` must be an integer. By convention ``0 ** 0`` returns ``1``,
+    matching Python's built-in ``**`` operator.
+
+    Raises:
+        TypeError: If ``exponent`` is not an integer.
+        ValueError: If ``base`` is zero and ``exponent`` is negative.
+
     Time complexity: O(log exponent).
     '''
-    if exponent < 0:
-        return 1 / fast_power(base, -exponent)
-    if exponent == 0:
-        return 1
-    if exponent == 1:
-        return base
+    if not isinstance(exponent, int) or isinstance(exponent, bool):
+        raise TypeError('exponent must be an integer')
+    if base == 0 and exponent < 0:
+        raise ValueError('0 cannot be raised to a negative power')
 
-    half = fast_power(base, exponent // 2)
-    if exponent % 2 == 0:
-        return half * half
-    return base * half * half
+    result: Union[int, float] = 1
+    b: Union[int, float] = base
+    exp = abs(exponent)
+    while exp > 0:
+        if exp & 1:
+            result *= b
+        b *= b
+        exp >>= 1
+    if exponent < 0:
+        result = 1 / result
+    return result
+
+
+def gcd(a: int, b: int) -> int:
+    '''Return the greatest common divisor of ``a`` and ``b``.
+
+    ``a`` and ``b`` must be integers. The result is always non-negative.
+    By convention, ``gcd(0, 0)`` returns ``0``.
+
+    Raises:
+        TypeError: If ``a`` or ``b`` is not an integer.
+    '''
+    if not isinstance(a, int) or isinstance(a, bool):
+        raise TypeError('gcd arguments must be integers')
+    if not isinstance(b, int) or isinstance(b, bool):
+        raise TypeError('gcd arguments must be integers')
+    a, b = abs(a), abs(b)
+    while b:
+        a, b = b, a % b
+    return a
+
+
+def lcm(a: int, b: int) -> int:
+    '''Return the least common multiple of ``a`` and ``b``.
+
+    ``a`` and ``b`` must be integers. The result is always non-negative.
+
+    Raises:
+        TypeError: If ``a`` or ``b`` is not an integer.
+        InvalidInputError: If both ``a`` and ``b`` are zero.
+    '''
+    if not isinstance(a, int) or isinstance(a, bool):
+        raise TypeError('lcm arguments must be integers')
+    if not isinstance(b, int) or isinstance(b, bool):
+        raise TypeError('lcm arguments must be integers')
+    if a == 0 and b == 0:
+        raise InvalidInputError('lcm of (0, 0) is undefined')
+    g = gcd(a, b)
+    return abs(a // g * b)
+
+
+def modular_fast_power(base: int, exponent: int, mod: int) -> int:
+    '''Return ``(base ** exponent) % mod`` using exponentiation by squaring.
+
+    ``exponent`` must be a non-negative integer and ``mod`` must be a
+    positive integer. By convention, ``0 ** 0`` returns ``1``.
+
+    Raises:
+        TypeError: If any argument is not an integer.
+        ValueError: If ``exponent`` is negative or ``mod`` is not positive.
+    '''
+    if not isinstance(base, int) or isinstance(base, bool):
+        raise TypeError('modular_fast_power arguments must be integers')
+    if not isinstance(exponent, int) or isinstance(exponent, bool):
+        raise TypeError('modular_fast_power arguments must be integers')
+    if not isinstance(mod, int) or isinstance(mod, bool):
+        raise TypeError('modular_fast_power arguments must be integers')
+    if mod <= 0:
+        raise ValueError('mod must be positive')
+    if exponent < 0:
+        raise ValueError('exponent must be non-negative')
+    if mod == 1:
+        return 0
+
+    base = base % mod
+    result = 1
+    while exponent > 0:
+        if exponent & 1:
+            result = (result * base) % mod
+        base = (base * base) % mod
+        exponent >>= 1
+    return result
+
+
+def sieve_of_eratosthenes(n: int) -> List[int]:
+    '''Return the list of prime numbers less than or equal to ``n``.
+
+    Raises:
+        TypeError: If ``n`` is not an integer.
+        ValueError: If ``n`` is negative.
+    '''
+    if not isinstance(n, int) or isinstance(n, bool):
+        raise TypeError('n must be an integer')
+    if n < 0:
+        raise ValueError('n must be non-negative')
+    if n < 2:
+        return []
+
+    sieve = [True] * (n + 1)
+    sieve[0] = sieve[1] = False
+    for p in range(2, int(n ** 0.5) + 1):
+        if sieve[p]:
+            for multiple in range(p * p, n + 1, p):
+                sieve[multiple] = False
+    return [i for i, is_prime in enumerate(sieve) if is_prime]

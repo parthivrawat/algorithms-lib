@@ -2,6 +2,8 @@
 
 from typing import List
 
+from .exceptions import InvalidInputError
+
 
 def kmp_search(text: str, pattern: str) -> List[int]:
     '''Return all starting indices of ``pattern`` in ``text`` using KMP.
@@ -44,9 +46,18 @@ def rabin_karp_search(
 
     Time complexity: O(n + m) average, O(n * m) worst-case due to hash
     collisions (mitigated by a full character comparison).
+
+    Raises:
+        ValueError: If ``pattern`` is empty, ``mod`` is not positive, or
+            ``base`` is not positive.
     '''
     if not pattern:
-        raise ValueError('pattern must not be empty')
+        raise InvalidInputError('pattern must not be empty')
+    if mod <= 0:
+        raise InvalidInputError('mod must be positive')
+    if base <= 0:
+        raise InvalidInputError('base must be positive')
+
     n, m = len(text), len(pattern)
     if m > n:
         return []
@@ -65,15 +76,15 @@ def rabin_karp_search(
         if i < n - m:
             text_hash = (text_hash - ord(text[i]) * h) % mod
             text_hash = (text_hash * base + ord(text[i + m])) % mod
-            text_hash %= mod
     return matches
 
 
 def boyer_moore_search(text: str, pattern: str) -> List[int]:
     '''Return all starting indices of ``pattern`` in ``text`` using Boyer-Moore
-    with the bad-character rule.
+    with both the bad-character and good-suffix rules.
 
-    Time complexity: O(n * m) worst case, but often much better in practice.
+    Time complexity: O(m) preprocessing and sublinear scanning on typical 
+    inputs; O(n * m) worst case when many matches are reported.
     '''
     if not pattern:
         raise ValueError('pattern must not be empty')
@@ -85,6 +96,7 @@ def boyer_moore_search(text: str, pattern: str) -> List[int]:
     bad_char = {}
     for i in range(m):
         bad_char[pattern[i]] = i
+    good_suffix = _good_suffix_shifts(pattern)
 
     matches: List[int] = []
     i = 0
@@ -94,8 +106,37 @@ def boyer_moore_search(text: str, pattern: str) -> List[int]:
             j -= 1
         if j < 0:
             matches.append(i)
-            i += m
+            i += good_suffix[0]
         else:
-            shift = j - bad_char.get(text[i + j], -1)
-            i += max(1, shift)
+            bad_char_shift = j - bad_char.get(text[i + j], -1)
+            i += max(good_suffix[j + 1], bad_char_shift, 1)
     return matches
+
+
+def _good_suffix_shifts(pattern: str) -> List[int]:
+    '''Build the Boyer-Moore good-suffix shift table.
+
+    ``shift[k]`` is the shift applied when a mismatch occurs at pattern index
+    ``k - 1``; ``shift[0]`` is applied after a full match and is derived from
+    the pattern's longest border, so overlapping matches are still found.
+    '''
+    m = len(pattern)
+    shift = [0] * (m + 1)
+    border_pos = [0] * (m + 1)
+    i, j = m, m + 1
+    border_pos[i] = j
+    while i > 0:
+        while j <= m and pattern[i - 1] != pattern[j - 1]:
+            if shift[j] == 0:
+                shift[j] = j - i
+            j = border_pos[j]
+        i -= 1
+        j -= 1
+        border_pos[i] = j
+    j = border_pos[0]
+    for i in range(m + 1):
+        if shift[i] == 0:
+            shift[i] = j
+        if i == j:
+            j = border_pos[j]
+    return shift

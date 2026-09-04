@@ -17,5 +17,9 @@ class InvalidGraphError(AlgorithmsError, ValueError):
     '''Raised when a graph algorithm receives an invalid graph or start node.'''
 
 
+class InvalidInputError(AlgorithmsError, ValueError):
+    '''Raised when an algorithm receives an argument with an invalid type or value.'''
+
+
 class NegativeCycleError(AlgorithmsError, ValueError):
     '''Raised when a shortest-path algorithm detects a negative-weight cycle.'''

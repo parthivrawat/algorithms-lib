@@ -1,8 +1,8 @@
 '''Searching algorithms for sorted sequences.'''
 
-from typing import List, TypeVar
+from typing import Callable, List, Optional, TypeVar
 
-from .exceptions import ValueNotFoundError
+from .exceptions import InvalidInputError
 
 T = TypeVar('T')
 
@@ -10,7 +10,9 @@ T = TypeVar('T')
 def _require_sorted(arr: List[T], name: str) -> None:
     for i in range(1, len(arr)):
         if arr[i] < arr[i - 1]:
-            raise ValueError(f'{name} requires a list sorted in ascending order')
+            raise InvalidInputError(
+                f'{name} requires a list sorted in ascending order'
+            )
 
 
 def binary_search(arr: List[T], target: T) -> int:
@@ -51,9 +53,7 @@ def interpolation_search(arr: List[int], target: int) -> int:
                 return lo
             break
 
-        pos = lo + int(
-            ((target - arr[lo]) / (arr[hi] - arr[lo])) * (hi - lo)
-        )
+        pos = lo + (target - arr[lo]) * (hi - lo) // (arr[hi] - arr[lo])
         if pos < lo or pos > hi:
             break
 
@@ -93,3 +93,44 @@ def jump_search(arr: List[T], target: T) -> int:
     if arr[prev] == target:
         return prev
     return -1
+
+
+def binary_search_on_answer(
+    low: int,
+    high: int,
+    predicate: Callable[[int], bool],
+    find: str = 'minimum'
+) -> Optional[int]:
+    '''Find the smallest or largest integer ``x`` in ``[low, high]`` for which
+    ``predicate(x)`` is true, assuming a monotone predicate.
+
+    ``find`` must be ``'minimum'`` or ``'maximum'``. Returns ``None`` if no
+    value in the range satisfies the predicate.
+    '''
+    if find not in ('minimum', 'maximum'):
+        raise InvalidInputError(
+            "binary_search_on_answer: find must be 'minimum' or 'maximum'"
+        )
+    if low > high:
+        return None
+    if find == 'minimum':
+        left, right = low, high
+        answer = None
+        while left <= right:
+            mid = (left + right) // 2
+            if predicate(mid):
+                answer = mid
+                right = mid - 1
+            else:
+                left = mid + 1
+        return answer
+    left, right = low, high
+    answer = None
+    while left <= right:
+        mid = (left + right) // 2
+        if predicate(mid):
+            answer = mid
+            left = mid + 1
+        else:
+            right = mid - 1
+    return answer

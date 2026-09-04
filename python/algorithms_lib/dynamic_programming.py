@@ -1,8 +1,8 @@
 '''Dynamic programming solutions to classic problems.'''
 
-from typing import Sequence, TypeVar
+from typing import List, Optional, Sequence, Tuple, TypeVar
 
-from .exceptions import EmptyInputError
+from .exceptions import InvalidInputError
 
 T = TypeVar('T')
 
@@ -10,9 +10,11 @@ T = TypeVar('T')
 def knapsack_01(weights: Sequence[int], values: Sequence[int], capacity: int) -> int:
     '''Return the maximum value achievable for the 0/1 knapsack problem.
 
-    ``weights`` and ``values`` must be equal-length sequences. ``capacity``
-    must be non-negative.
+    ``weights`` and ``values`` must be equal-length sequences of integers.
+    ``capacity`` must be a non-negative integer.
     '''
+    if not isinstance(capacity, int) or isinstance(capacity, bool):
+        raise InvalidInputError('capacity must be a non-negative integer')
     if len(weights) != len(values):
         raise ValueError('weights and values must have the same length')
     if capacity < 0:
@@ -60,3 +62,79 @@ def edit_distance(a: Sequence[T], b: Sequence[T]) -> int:
             )
         prev = curr
     return prev[n]
+
+
+def longest_common_subsequence_reconstruction(
+    a: Sequence[T], b: Sequence[T]
+) -> Tuple[int, List[T]]:
+    '''Return the length and one longest common subsequence of ``a`` and ``b``.'''
+    m, n = len(a), len(b)
+    dp = [[0] * (n + 1) for _ in range(m + 1)]
+    for i in range(1, m + 1):
+        for j in range(1, n + 1):
+            if a[i - 1] == b[j - 1]:
+                dp[i][j] = dp[i - 1][j - 1] + 1
+            else:
+                dp[i][j] = max(dp[i - 1][j], dp[i][j - 1])
+    result: List[T] = []
+    i, j = m, n
+    while i > 0 and j > 0:
+        if a[i - 1] == b[j - 1]:
+            result.append(a[i - 1])
+            i -= 1
+            j -= 1
+        elif dp[i - 1][j] >= dp[i][j - 1]:
+            i -= 1
+        else:
+            j -= 1
+    result.reverse()
+    return dp[m][n], result
+
+
+def edit_distance_reconstruction(
+    a: Sequence[T], b: Sequence[T]
+) -> Tuple[int, List[Tuple[str, Optional[T], Optional[T]]]]:
+    '''Return the Levenshtein distance and one optimal edit script.'''
+    m, n = len(a), len(b)
+    dp = [[0] * (n + 1) for _ in range(m + 1)]
+    for i in range(m + 1):
+        dp[i][0] = i
+    for j in range(n + 1):
+        dp[0][j] = j
+    for i in range(1, m + 1):
+        for j in range(1, n + 1):
+            if a[i - 1] == b[j - 1]:
+                dp[i][j] = dp[i - 1][j - 1]
+            else:
+                dp[i][j] = 1 + min(
+                    dp[i - 1][j],
+                    dp[i][j - 1],
+                    dp[i - 1][j - 1],
+                )
+    script: List[Tuple[str, Optional[T], Optional[T]]] = []
+    i, j = m, n
+    while i > 0 or j > 0:
+        if i == 0:
+            script.append(('insert', None, b[j - 1]))
+            j -= 1
+        elif j == 0:
+            script.append(('delete', a[i - 1], None))
+            i -= 1
+        elif a[i - 1] == b[j - 1]:
+            script.append(('match', a[i - 1], b[j - 1]))
+            i -= 1
+            j -= 1
+        else:
+            best = dp[i][j]
+            if dp[i - 1][j - 1] + 1 == best:
+                script.append(('substitute', a[i - 1], b[j - 1]))
+                i -= 1
+                j -= 1
+            elif dp[i][j - 1] + 1 == best:
+                script.append(('insert', None, b[j - 1]))
+                j -= 1
+            else:
+                script.append(('delete', a[i - 1], None))
+                i -= 1
+    script.reverse()
+    return dp[m][n], script
