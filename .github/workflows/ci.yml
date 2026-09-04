@@ -1,0 +1,73 @@
+name: CI
+
+on:
+  push:
+    branches: [main, master]
+  pull_request:
+    branches: [main, master]
+
+jobs:
+  python:
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: ./python
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+      - name: Install and test
+        run: |
+          pip install -e ".[dev]"
+          pytest
+
+  typescript:
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: ./typescript
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 20
+      - name: Install, lint, build, and test
+        run: |
+          npm ci
+          npm run lint
+          npm run build
+          npm test
+
+  go:
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: ./go
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-go@v5
+        with:
+          go-version: "1.21"
+      - name: Vet, format check, build, and test
+        run: |
+          go vet ./...
+          test -z "$(gofmt -l .)"
+          go build ./...
+          go test ./...
+
+  rust:
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: ./rust
+    steps:
+      - uses: actions/checkout@v4
+      - uses: dtolnay/rust-toolchain@stable
+        with:
+          components: rustfmt, clippy
+      - name: Format, clippy, and test
+        run: |
+          cargo fmt --check
+          cargo clippy -- -D warnings
+          cargo test
