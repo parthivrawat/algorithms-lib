@@ -23,13 +23,21 @@
 //! ```
 
 #![warn(missing_docs)]
+#![allow(
+    clippy::for_kv_map,
+    clippy::multiple_bound_locations,
+    clippy::needless_range_loop,
+    clippy::type_complexity,
+    clippy::unnecessary_lazy_evaluations,
+    clippy::useless_vec
+)]
 
 use std::cmp::Ordering;
 use std::cmp::Reverse;
 use std::collections::{BinaryHeap, HashMap, HashSet, VecDeque};
-use std::hash::Hash;
 use std::error::Error as StdError;
 use std::fmt;
+use std::hash::Hash;
 
 /// Errors that can be returned by algorithms in this crate.
 #[derive(Debug, Clone, PartialEq)]
@@ -821,9 +829,7 @@ pub fn edit_distance_reconstruction<T: PartialEq + Clone>(
             if a[i - 1] == b[j - 1] {
                 dp[i][j] = dp[i - 1][j - 1];
             } else {
-                dp[i][j] = 1 + dp[i - 1][j]
-                    .min(dp[i][j - 1])
-                    .min(dp[i - 1][j - 1]);
+                dp[i][j] = 1 + dp[i - 1][j].min(dp[i][j - 1]).min(dp[i - 1][j - 1]);
             }
         }
     }
@@ -1259,9 +1265,7 @@ pub fn huffman_encode(
 ) -> Result<String, Error> {
     let mut parts = Vec::with_capacity(symbols.len());
     for s in symbols {
-        let code = code_table
-            .get(s)
-            .ok_or_else(|| Error::InvalidInput)?;
+        let code = code_table.get(s).ok_or_else(|| Error::InvalidInput)?;
         parts.push(code.clone());
     }
     Ok(parts.concat())
@@ -1525,9 +1529,7 @@ pub fn sieve_of_eratosthenes(n: i64) -> Result<Vec<i64>, Error> {
 }
 
 /// Topological sort using Kahn's algorithm.
-pub fn topological_sort(
-    graph: &HashMap<String, Vec<String>>,
-) -> Result<Vec<String>, Error> {
+pub fn topological_sort(graph: &HashMap<String, Vec<String>>) -> Result<Vec<String>, Error> {
     validate_adjacency_list(graph)?;
     let mut in_degree: HashMap<String, usize> = HashMap::new();
     for (node, _) in graph {
@@ -1687,9 +1689,7 @@ pub struct MSTEdge {
 }
 
 /// Kruskal's minimum spanning tree (or forest) algorithm.
-pub fn minimum_spanning_tree(
-    edges: &[MSTEdge],
-) -> Result<(f64, Vec<MSTEdge>), Error> {
+pub fn minimum_spanning_tree(edges: &[MSTEdge]) -> Result<(f64, Vec<MSTEdge>), Error> {
     for e in edges {
         if !e.weight.is_finite() {
             return Err(Error::InvalidInput);
@@ -1697,11 +1697,7 @@ pub fn minimum_spanning_tree(
     }
 
     let mut sorted: Vec<MSTEdge> = edges.to_vec();
-    sorted.sort_by(|a, b| {
-        a.weight
-            .partial_cmp(&b.weight)
-            .unwrap_or(Ordering::Equal)
-    });
+    sorted.sort_by(|a, b| a.weight.partial_cmp(&b.weight).unwrap_or(Ordering::Equal));
 
     let mut vertices = HashSet::new();
     for e in edges {

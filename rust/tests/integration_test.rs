@@ -487,7 +487,10 @@ fn test_quick_select() {
     assert_eq!(quick_select(&[3, 2, 1, 5, 4], 0).unwrap(), 1);
     assert_eq!(quick_select(&[3, 2, 1, 5, 4], 2).unwrap(), 3);
     assert_eq!(quick_select(&[3, 2, 1, 5, 4], 4).unwrap(), 5);
-    assert_eq!(quick_select(&["cherry", "apple", "banana"], 1).unwrap(), "banana");
+    assert_eq!(
+        quick_select(&["cherry", "apple", "banana"], 1).unwrap(),
+        "banana"
+    );
     assert_eq!(quick_select(&[1, 2, 3], 5), Err(Error::InvalidInput));
 }
 
@@ -554,10 +557,26 @@ fn test_priority_queue() {
 #[test]
 fn test_minimum_spanning_tree() {
     let edges = [
-        MSTEdge { u: "a".to_string(), v: "b".to_string(), weight: 1.0 },
-        MSTEdge { u: "b".to_string(), v: "c".to_string(), weight: 2.0 },
-        MSTEdge { u: "a".to_string(), v: "c".to_string(), weight: 3.0 },
-        MSTEdge { u: "c".to_string(), v: "d".to_string(), weight: 4.0 },
+        MSTEdge {
+            u: "a".to_string(),
+            v: "b".to_string(),
+            weight: 1.0,
+        },
+        MSTEdge {
+            u: "b".to_string(),
+            v: "c".to_string(),
+            weight: 2.0,
+        },
+        MSTEdge {
+            u: "a".to_string(),
+            v: "c".to_string(),
+            weight: 3.0,
+        },
+        MSTEdge {
+            u: "c".to_string(),
+            v: "d".to_string(),
+            weight: 4.0,
+        },
     ];
     let (total, mst) = minimum_spanning_tree(&edges).unwrap();
     assert!((total - 7.0).abs() < 1e-9);
@@ -567,17 +586,39 @@ fn test_minimum_spanning_tree() {
 #[test]
 fn test_floyd_warshall() {
     let mut graph: HashMap<String, Vec<Edge>> = HashMap::new();
-    graph.insert("a".to_string(), vec![
-        Edge { to: "b".to_string(), weight: 1.0 },
-        Edge { to: "c".to_string(), weight: 4.0 },
-    ]);
-    graph.insert("b".to_string(), vec![
-        Edge { to: "c".to_string(), weight: 2.0 },
-        Edge { to: "d".to_string(), weight: 5.0 },
-    ]);
-    graph.insert("c".to_string(), vec![
-        Edge { to: "d".to_string(), weight: 1.0 },
-    ]);
+    graph.insert(
+        "a".to_string(),
+        vec![
+            Edge {
+                to: "b".to_string(),
+                weight: 1.0,
+            },
+            Edge {
+                to: "c".to_string(),
+                weight: 4.0,
+            },
+        ],
+    );
+    graph.insert(
+        "b".to_string(),
+        vec![
+            Edge {
+                to: "c".to_string(),
+                weight: 2.0,
+            },
+            Edge {
+                to: "d".to_string(),
+                weight: 5.0,
+            },
+        ],
+    );
+    graph.insert(
+        "c".to_string(),
+        vec![Edge {
+            to: "d".to_string(),
+            weight: 1.0,
+        }],
+    );
     graph.insert("d".to_string(), Vec::new());
     let dist = floyd_warshall(&graph).unwrap();
     assert!((dist["a"]["d"] - 4.0).abs() < 1e-9);
@@ -588,12 +629,20 @@ fn test_floyd_warshall() {
 #[test]
 fn test_floyd_warshall_negative_cycle() {
     let mut graph: HashMap<String, Vec<Edge>> = HashMap::new();
-    graph.insert("a".to_string(), vec![
-        Edge { to: "b".to_string(), weight: 1.0 },
-    ]);
-    graph.insert("b".to_string(), vec![
-        Edge { to: "a".to_string(), weight: -2.0 },
-    ]);
+    graph.insert(
+        "a".to_string(),
+        vec![Edge {
+            to: "b".to_string(),
+            weight: 1.0,
+        }],
+    );
+    graph.insert(
+        "b".to_string(),
+        vec![Edge {
+            to: "a".to_string(),
+            weight: -2.0,
+        }],
+    );
     assert_eq!(floyd_warshall(&graph), Err(Error::NegativeCycle));
 }
 
@@ -627,6 +676,12 @@ fn test_has_cycle() {
 
 #[test]
 fn test_binary_search_on_answer() {
-    assert_eq!(binary_search_on_answer(1, 10, |x| x >= 6, "minimum").unwrap(), 6);
-    assert_eq!(binary_search_on_answer(1, 10, |x| x <= 4, "maximum").unwrap(), 4);
+    assert_eq!(
+        binary_search_on_answer(1, 10, |x| x >= 6, "minimum").unwrap(),
+        6
+    );
+    assert_eq!(
+        binary_search_on_answer(1, 10, |x| x <= 4, "maximum").unwrap(),
+        4
+    );
 }

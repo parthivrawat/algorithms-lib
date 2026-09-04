@@ -1448,7 +1448,7 @@ export function minimumSpanningTree(
     vertices.add(u);
     vertices.add(v);
   }
-  for (const [_, __, w] of edges) {
+  for (const [, , w] of edges) {
     if (!Number.isFinite(w)) {
       throw new InvalidInputError('edge weights must be finite numbers');
     }
