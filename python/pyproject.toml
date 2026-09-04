@@ -1,3 +1,48 @@
 [build-system]
 requires = ["setuptools>=61.0", "wheel"]
 build-backend = "setuptools.build_meta"
+
+[project]
+name = "algorithms-lib"
+version = "2.0.0"
+authors = [{ name = "Parthiv Rawat" }]
+description = "A comprehensive, zero-dependency collection of common algorithms for Python"
+readme = "README.md"
+license = { file = "LICENSE" }
+requires-python = ">=3.9"
+classifiers = [
+    "Development Status :: 5 - Production/Stable",
+    "Intended Audience :: Developers",
+    "Topic :: Software Development :: Libraries :: Python Modules",
+    "License :: OSI Approved :: MIT License",
+    "Programming Language :: Python :: 3",
+    "Programming Language :: Python :: 3.9",
+    "Programming Language :: Python :: 3.10",
+    "Programming Language :: Python :: 3.11",
+    "Programming Language :: Python :: 3.12",
+    "Programming Language :: Python :: 3.13",
+    "Typing :: Typed",
+]
+keywords = ["algorithms", "sorting", "searching", "graphs", "dynamic-programming"]
+dependencies = []
+
+[project.optional-dependencies]
+dev = [
+    "pytest>=7.0.0",
+    "pytest-cov>=4.0.0",
+]
+
+[project.urls]
+Homepage = "https://github.com/parthivrawat/algorithms-lib"
+Repository = "https://github.com/parthivrawat/algorithms-lib.git"
+Issues = "https://github.com/parthivrawat/algorithms-lib/issues"
+
+[tool.setuptools]
+include-package-data = true
+
+[tool.setuptools.packages.find]
+where = ["."]
+include = ["algorithms_lib*"]
+
+[tool.setuptools.package-data]
+algorithms_lib = ["py.typed"]

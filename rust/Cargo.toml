@@ -1,7 +1,8 @@
 [package]
 name = "algorithms-lib"
-version = "1.0.0"
+version = "2.0.0"
 edition = "2021"
+rust-version = "1.62"
 authors = ["Parthiv Rawat"]
 license = "MIT"
 description = "A comprehensive, zero-dependency collection of common algorithms for Rust"
@@ -11,5 +12,9 @@ documentation = "https://docs.rs/algorithms-lib"
 readme = "README.md"
 keywords = ["algorithms", "sorting", "searching", "graphs", "dynamic-programming"]
 categories = ["algorithms"]
+include = ["src/**", "tests/**", "README.md", "LICENSE"]
 
 [dependencies]
+
+[dev-dependencies]
+serde_json = "1"
