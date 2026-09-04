@@ -11,22 +11,33 @@ npm install algos-lib
 ## Quick Start
 
 ```typescript
-import { quickSort, binarySearch, bfs, dijkstra } from 'algos-lib';
+import {
+  quickSort,
+  binarySearch,
+  bfs,
+  dijkstra,
+  type AdjacencyList,
+  type WeightedAdjacencyList,
+} from 'algos-lib';
 
 const sorted = quickSort([3, 1, 4, 1, 5, 9, 2, 6]);
 console.log(binarySearch(sorted, 4)); // 3
 
-const graph = { a: ['b', 'c'], b: ['d'], c: [], d: [] };
+const graph: AdjacencyList = { a: ['b', 'c'], b: ['d'], c: [], d: [] };
 console.log(bfs(graph, 'a')); // ['a', 'b', 'c', 'd']
 
-const weighted = {
-  a: [['b', 1] as [string, number], ['c', 4] as [string, number]],
-  b: [['c', 2] as [string, number], ['d', 5] as [string, number]],
-  c: [['d', 1] as [string, number]],
+const weighted: WeightedAdjacencyList = {
+  a: [['b', 1], ['c', 4]],
+  b: [['c', 2], ['d', 5]],
+  c: [['d', 1]],
   d: [],
 };
 const { distances } = dijkstra(weighted, 'a');
 console.log(distances['d']); // 4
+
+// Custom comparators let the generic sorts/searches order arbitrary types:
+const people = [{ name: 'amy', age: 30 }, { name: 'bob', age: 25 }];
+quickSort(people, (a, b) => a.age - b.age); // sorted by age
 ```
 
 ## Features
@@ -34,8 +45,10 @@ console.log(distances['d']); // 4
 - **Zero runtime dependencies**: No external packages required
 - **Comprehensive coverage**: Sorting, searching, graphs, dynamic programming, strings, greedy, and divide-and-conquer
 - **Strongly typed**: Generic APIs with full TypeScript declarations
+- **Custom comparators**: every generic sort/search accepts an optional `compareFn` for arbitrary element types
+- **Typed error taxonomy**: `AlgorithmsError` subclasses (`InvalidInputError`, `InvalidGraphError`, `NegativeCycleError`, `ValueNotFoundError`, `EmptyInputError`) for precise error handling
 - **Dual format**: CommonJS (`dist/index.js`) and ESM (`dist/index.mjs`) with `dist/index.d.ts`
-- **Well tested**: Vitest test suite covering common and edge cases
+- **Tested**: Vitest test suite covering common cases and edge cases
 
 ## Supported Algorithms
 
@@ -45,7 +58,7 @@ console.log(distances['d']); // 4
 - `mergeSort`: stable merge sort
 - `heapSort`: binary max-heap sort
 - `radixSort`: LSD radix sort for non-negative integers
-- `timSort`: array sort using JavaScript's built-in Timsort
+- `nativeSort`: array sort using the built-in sort
 
 ### Searching
 
@@ -71,7 +84,7 @@ console.log(distances['d']); // 4
 
 - `kmpSearch`: Knuth-Morris-Pratt pattern matching
 - `rabinKarpSearch`: rolling-hash pattern matching
-- `boyerMooreSearch`: Boyer-Moore with bad-character rule
+- `boyerMooreSearch`: Boyer-Moore with bad-character and good-suffix rules; reports overlapping matches
 
 ### Greedy
 

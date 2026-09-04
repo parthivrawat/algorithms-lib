@@ -8,6 +8,11 @@ A comprehensive, zero-dependency collection of common algorithms for Go. The pac
 go get github.com/parthivrawat/algorithms-lib/go
 ```
 
+> **Note:** The module path ends in `/go` (it lives in the `go/` directory of a
+> multi-language repo), but the package is named `algorithms`. Go resolves the
+> package name automatically, but writing an explicit alias keeps imports
+> self-documenting: `algorithms "github.com/parthivrawat/algorithms-lib/go"`.
+
 ## Quick Start
 
 ```go
@@ -15,7 +20,8 @@ package main
 
 import (
     "fmt"
-    "github.com/parthivrawat/algorithms-lib/go"
+
+    algorithms "github.com/parthivrawat/algorithms-lib/go"
 )
 
 func main() {
@@ -41,7 +47,7 @@ func main() {
 - **Zero runtime dependencies**: Uses only the Go standard library
 - **Comprehensive coverage**: Sorting, searching, graphs, dynamic programming, strings, greedy, and divide-and-conquer
 - **Generic APIs**: Type-safe with Go 1.21+ generics
-- **Well tested**: Full `go test` coverage
+- **Tested**: `go test` suite covering common cases and edge cases
 - **Idiomatic errors**: Methods return `error` values where appropriate
 
 ## Supported Algorithms
@@ -52,7 +58,7 @@ func main() {
 - `MergeSort`: stable merge sort
 - `HeapSort`: binary max-heap sort
 - `RadixSort`: LSD radix sort for non-negative integers
-- `TimSort`: standard-library sort wrapper
+- `NativeSort`: standard-library sort wrapper
 
 ### Searching
 
@@ -78,7 +84,7 @@ func main() {
 
 - `KMPSearch`: Knuth-Morris-Pratt pattern matching
 - `RabinKarpSearch`: rolling-hash pattern matching
-- `BoyerMooreSearch`: Boyer-Moore with bad-character rule
+- `BoyerMooreSearch`: Boyer-Moore with bad-character and good-suffix rules; reports overlapping matches (byte offsets)
 
 ### Greedy
 
@@ -90,7 +96,7 @@ func main() {
 
 - `MaxSubarray`: maximum subarray sum
 - `CountInversions`: inversion count via merge sort
-- `FastPower`: exponentiation by squaring
+- `FastPower`: exponentiation by squaring (returns `error` for `0` to a negative power)
 
 ## Development
 

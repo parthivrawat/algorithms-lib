@@ -47,11 +47,11 @@ print(distances['d'])  # 4
 
 ### Sorting
 
-- `quick_sort`: in-place-memory quick sort
+- `quick_sort`: quick sort (returns a new list, not in-place)
 - `merge_sort`: stable merge sort
 - `heap_sort`: binary max-heap sort
 - `radix_sort`: LSD radix sort for non-negative integers
-- `tim_sort`: Python\'s Timsort wrapper
+- `native_sort`: wrapper around the built-in sort
 
 ### Searching
 
@@ -77,7 +77,7 @@ print(distances['d'])  # 4
 
 - `kmp_search`: Knuth-Morris-Pratt pattern matching
 - `rabin_karp_search`: rolling-hash pattern matching
-- `boyer_moore_search`: Boyer-Moore with bad-character rule
+- `boyer_moore_search`: Boyer-Moore with bad-character and good-suffix rules; reports overlapping matches
 
 ### Greedy
 

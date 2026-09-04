@@ -8,7 +8,7 @@ Add the crate to your `Cargo.toml`:
 
 ```toml
 [dependencies]
-algorithms-lib = "1.0.0"
+algorithms-lib = "2.0.0"
 ```
 
 ## Quick Start
@@ -55,7 +55,7 @@ assert_eq!(distances["d"], 4.0);
 - `merge_sort`: stable merge sort
 - `heap_sort`: binary max-heap sort
 - `radix_sort`: LSD radix sort for non-negative integers
-- `tim_sort`: Rust's standard library sort wrapper
+- `native_sort`: standard library sort wrapper
 
 ### Searching
 
@@ -81,7 +81,7 @@ assert_eq!(distances["d"], 4.0);
 
 - `kmp_search`: Knuth-Morris-Pratt pattern matching
 - `rabin_karp_search`: rolling-hash pattern matching
-- `boyer_moore_search`: Boyer-Moore with bad-character rule
+- `boyer_moore_search`: Boyer-Moore with bad-character and good-suffix rules; reports overlapping matches (byte offsets)
 
 ### Greedy
 
@@ -93,7 +93,7 @@ assert_eq!(distances["d"], 4.0);
 
 - `max_subarray`: maximum subarray sum
 - `count_inversions`: inversion count via merge sort
-- `fast_power`: exponentiation by squaring
+- `fast_power`: exponentiation by squaring (returns `Err` for `0` to a negative power)
 
 ## Development
 
