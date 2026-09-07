@@ -8,7 +8,7 @@ A polyglot, production-ready collection of common algorithms implemented for Pyt
 |---|---|---|
 | Python | `algorithms-lib` | [PyPI](https://pypi.org/project/algorithms-lib) |
 | TypeScript | `algos-lib` | [npm](https://www.npmjs.com/package/algos-lib) |
-| Go | `github.com/parthivrawat/algorithms-lib/go` | [pkg.go.dev](https://pkg.go.dev/github.com/parthivrawat/algorithms-lib/go) |
+| Go | `github.com/parthivrawat/algorithms-lib/go/v2` | [pkg.go.dev](https://pkg.go.dev/github.com/parthivrawat/algorithms-lib/go/v2) |
 | Rust | `algorithms-lib` | [crates.io](https://crates.io/crates/algorithms-lib) |
 
 ## Overview
