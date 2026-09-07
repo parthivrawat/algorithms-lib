@@ -5,13 +5,15 @@ A comprehensive, zero-dependency collection of common algorithms for Go. The pac
 ## Installation
 
 ```bash
-go get github.com/parthivrawat/algorithms-lib/go
+go get github.com/parthivrawat/algorithms-lib/go/v2
 ```
 
-> **Note:** The module path ends in `/go` (it lives in the `go/` directory of a
-> multi-language repo), but the package is named `algorithms`. Go resolves the
-> package name automatically, but writing an explicit alias keeps imports
-> self-documenting: `algorithms "github.com/parthivrawat/algorithms-lib/go"`.
+> **Note:** The module path ends in `/go/v2` — the `/v2` suffix is required by
+> Go semantic import versioning for major versions ≥ 2 (the module lives in the
+> `go/` directory of a multi-language repo), but the package is named
+> `algorithms`. Go resolves the package name automatically, but writing an
+> explicit alias keeps imports self-documenting:
+> `algorithms "github.com/parthivrawat/algorithms-lib/go/v2"`.
 
 ## Quick Start
 
@@ -21,7 +23,7 @@ package main
 import (
     "fmt"
 
-    algorithms "github.com/parthivrawat/algorithms-lib/go"
+    algorithms "github.com/parthivrawat/algorithms-lib/go/v2"
 )
 
 func main() {
